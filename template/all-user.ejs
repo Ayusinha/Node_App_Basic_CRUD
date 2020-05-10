@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            table, th, td {
+                border: 1px solid black;
+            }
+            td{
+                text-align: center;
+            }
+            .button {
+                border: none;
+                color: white;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                border-radius: 5px;
+                cursor: pointer;
+              }
+            .button1 {background-color: #008CBA;} 
+            .button2 {background-color: #f44336;}
+            a{
+                text-decoration: none;
+                text-align: center;
+                color: black;
+            }
+            #f{
+                color: white;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>List of All Users :-</h1>
+        <table style="width:100%">
+            <tr>
+                <th>Name</th>
+                <th>Email</th> 
+                <th>Phone</th>
+                <th>Funtions</th>
+            </tr>
+            <% for(var i = 0;i < data.length;i++){ %>
+                <tr>
+                    <td><%=data[i].name%></td>
+                    <td><%=data[i].email%></td>
+                    <td><%=data[i].phone%></td>
+                    <td><button class="button button1"><a id="f" href='/update'>Edit</a></button> / <button class="button button2"> <a id="f" href="/delete">Delete</a></button></td>
+                </tr>
+            <% } %>
+            
+        </table>
+        <button><a href="/home">Add new user</a></button>
+    </body>
+</html>
