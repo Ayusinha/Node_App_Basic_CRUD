@@ -45,7 +45,7 @@
                     <td><%=data[i].name%></td>
                     <td><%=data[i].email%></td>
                     <td><%=data[i].phone%></td>
-                    <td><button class="button button1"><a id="f" href='/update'>Edit</a></button> / <button class="button button2"> <a id="f" href="/delete">Delete</a></button></td>
+                    <td><button class="button button1" value="UPDATE"><a id="f" href="update/edit/<%=data[i]._id%>" >Edit</a></button> / <button class="button button2" value="DELETE"> <a id="f" href="/delete/<%=data[i]._id%>">Delete</a></button></td>
                 </tr>
             <% } %>
             

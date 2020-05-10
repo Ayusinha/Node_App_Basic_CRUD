@@ -6,20 +6,28 @@ const mongoose=require('mongoose')
 const app = express()
 app.use(bodyParser.urlencoded({extended: true}))
 
+mongoose.connect("mongodb://localhost:27017/node-app-db",{ useNewUrlParser: true,useUnifiedTopology: true });
+const db=mongoose.connection; 
+db.once('open', function(callback){ 
+    // console.log(db.collections.find())
+    console.log("connection succeeded"); 
+}) 
+
+const Schema = new mongoose.Schema({
+	name: String,
+    email   : String,
+    password : String,
+    phone : String
+});
+
+var user = mongoose.model('users', Schema);
+
 const fs=require('fs');
 
 app.get('/', (req, res)=>{
-    const MongoClient = require('mongodb').MongoClient;
-    const url = "mongodb://localhost:27017/";
-    MongoClient.connect(url,{ useUnifiedTopology: true } ,(err, db)=> {
-        if (err) throw err;
-        const dbo = db.db("node-app-db");
-        dbo.collection("users").find({}).toArray((err, result) => {
+    db.collection('users').find({}).toArray((err, result) => {
             if (err) throw err;
-            //console.log(result);
             res.render(__dirname+'/template/all-user.ejs',{data: result});
-            db.close();
-        });
     });
 })
 
@@ -31,13 +39,6 @@ app.get('/home',(req, res)=>{
 
 
 //adding data to database.
-mongoose.connect('mongodb://localhost:27017/node-app-db',{ useNewUrlParser: true , useUnifiedTopology: true }); 
-const db=mongoose.connection; 
-db.on('error', console.log.bind(console, "connection error")); 
-db.once('open', function(callback){ 
-    // console.log(db.collections.find())
-    console.log("connection succeeded"); 
-}) 
 
 app.post('/create', (req, res) => {
     console.log(req.body);
@@ -66,11 +67,53 @@ app.post('/create', (req, res) => {
 })
 
 //edit database
-app.get('/update', (req, res) => {
-    res.send('Hello');
+app.get('/update/edit/:id', (req, res) => {
+    const temp=req.params.id;
+    //console.log(id);
+    var id = require('mongodb').ObjectID(temp);
+    console.log(id);
+    db.collection('users').findOne({_id:id},(err, result)=>{
+        //check if there's records in database to display
+        //res.send(result.name);
+        res.render(__dirname+'/template/edit_user.ejs',{data: result});      
+    });
+    //res.render(__dirname+'/template/edit_user.ejs',{data: data});
+})
+
+//update database.
+app.get('/update/:id', (req, res) => {
+    const temp=req.params.id;
+    //console.log(temp);
+    var id = require('mongodb').ObjectID(temp);
+    //console.log(id);
+
+    //new data..
+    const dataNew = { 
+        "name": req.body.name, 
+        "email":req.body.email, 
+        "password":req.body.password, 
+        "phone":req.body.phone 
+    }
+    console.log(dataNew)
+
+    db.collection('users').updateOne({_id: id},dataNew, (err)=>{
+        if(err) res.send(err)
+        res.redirect('/');
+    })
+    //res.render(__dirname+'/template/edit_user.ejs',{data: data});
 })
 
 //delete data base.
+app.get('/delete/:id', (req, res) => {
+    const temp=req.params.id;
+    //console.log(id);
+    var id = require('mongodb').ObjectID(temp);
+    db.collection('users').deleteOne({_id : id},(err)=>{ 
+        if (err) throw err;
+        console.log("Record Deleted Successfully");    
+    });
+    res.redirect('/');
+})
 
 
 //creating server
