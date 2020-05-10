@@ -81,7 +81,7 @@ app.get('/update/edit/:id', (req, res) => {
 })
 
 //update database.
-app.get('/update/:id', (req, res) => {
+app.post('/update/:id', (req, res) => {
     const temp=req.params.id;
     //console.log(temp);
     var id = require('mongodb').ObjectID(temp);
@@ -94,11 +94,16 @@ app.get('/update/:id', (req, res) => {
         "password":req.body.password, 
         "phone":req.body.phone 
     }
-    console.log(dataNew)
+    //console.log(dataNew)
 
-    db.collection('users').updateOne({_id: id},dataNew, (err)=>{
+    db.collection('users').updateOne({_id: id},{$set :dataNew}, (err,data)=>{
         if(err) res.send(err)
-        res.redirect('/');
+        res.send(`<h1>Hello ${req.body.name} is Updated successfully !!!</h1>
+        <h3>Welcome to your Profile , </h3>
+        <h3>Your email is :- ${req.body.email}</h3>
+        <h3>Your Contact info :- ${req.body.phone}</h3>
+        <br>
+        <h4>To see all user <a href="/">CLICK HERE</a> !!!</h4>`);
     })
     //res.render(__dirname+'/template/edit_user.ejs',{data: data});
 })
